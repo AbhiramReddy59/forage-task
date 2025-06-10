@@ -55,3 +55,30 @@ This document outlines the steps taken to set up the Midas Core project environm
 *   To create the missing resources directory: `mkdir -p src\main\resources`
 
 This setup ensures that the project has the necessary dependencies and basic configuration to proceed with further development tasks.
+
+## 5. Task 2: Kafka Integration
+
+*   **Objective**: Implement a Kafka listener to consume `Transaction` messages from a topic.
+*   **Created `TransactionListener.java`**: A new class was created at `src/main/java/com/jpmc/midascore/kafka/TransactionListener.java`. This class contains a `@KafkaListener` method to process incoming transactions and log their amounts.
+*   **Configured Kafka Consumer**: The `application.properties` file was updated to configure the Kafka consumer:
+    *   Set the consumer group ID: `spring.kafka.consumer.group-id=midas-group`.
+    *   Configured the `JsonDeserializer` to automatically convert incoming JSON messages into `Transaction` objects: `spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer`.
+    *   Added the `com.jpmc.midascore.foundation` package to the trusted packages for deserialization.
+*   **Troubleshooting Test Execution**:
+    *   **Initial Test Run**: Running `TaskTwoTests` resulted in a `SerializationException`. The root cause was that the Kafka producer in the test was configured to send a `String`, but it was being passed a `Transaction` object.
+    *   **Fixing Serialization**: The issue was resolved by configuring the Kafka producer to use the `JsonSerializer`. The following line was added to `application.properties`:
+        ```properties
+        spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer
+        ```
+    *   **Fixing Test Loop**: The `TaskTwoTests` was designed to run in an infinite loop, which prevented the test from completing and generating log files. This was fixed by replacing the `while(true)` loop with a `Thread.sleep(5000)` to allow the listener time to process messages before the test exits.
+*   **Debugging and Final Verification**: The listener was still not producing visible logs in the test reports. After several attempts to fix this by adjusting logging levels and deserializers, a robust test verification strategy was implemented:
+    *   The listener was modified to store received transactions in a list.
+    *   The test was updated to use `Awaitility` to wait for the messages and then directly inspect the list.
+    *   When logging was still suppressed, the test was temporarily modified to fail intentionally, printing the transaction amounts in the failure message to guarantee visibility.
+*   **Transaction Amounts Identified**: This final debugging step successfully revealed the amounts of the first four transactions:
+    ```
+    Transaction 1: 122.86
+    Transaction 2: 42.87
+    Transaction 3: 161.79
+    Transaction 4: 22.22
+    ```

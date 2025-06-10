@@ -164,6 +164,41 @@
             <li>To create the missing resources directory: <code>mkdir -p src\main\resources</code></li>
         </ul>
         <p>This setup ensures that the project has the necessary dependencies and basic configuration to proceed with further development tasks.</p>
+
+        <h2>5. Task 2: Kafka Integration</h2>
+        <ul>
+            <li><strong>Objective</strong>: Implement a Kafka listener to consume <code>Transaction</code> messages from a topic.</li>
+            <li><strong>Created <code>TransactionListener.java</code></strong>: A new class was created at <code>src/main/java/com/jpmc/midascore/kafka/TransactionListener.java</code>. This class contains a <code>@KafkaListener</code> method to process incoming transactions and log their amounts.</li>
+            <li><strong>Configured Kafka Consumer</strong>: The <code>application.properties</code> file was updated to configure the Kafka consumer:
+                <ul>
+                    <li>Set the consumer group ID: <code>spring.kafka.consumer.group-id=midas-group</code>.</li>
+                    <li>Configured the <code>JsonDeserializer</code> to automatically convert incoming JSON messages into <code>Transaction</code> objects: <code>spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer</code>.</li>
+                    <li>Added the <code>com.jpmc.midascore.foundation</code> package to the trusted packages for deserialization.</li>
+                </ul>
+            </li>
+            <li><strong>Troubleshooting Test Execution</strong>:
+                <ul>
+                    <li><strong>Initial Test Run</strong>: Running <code>TaskTwoTests</code> resulted in a <code>SerializationException</code>. The root cause was that the Kafka producer in the test was configured to send a <code>String</code>, but it was being passed a <code>Transaction</code> object.</li>
+                    <li><strong>Fixing Serialization</strong>: The issue was resolved by configuring the Kafka producer to use the <code>JsonSerializer</code>. The following line was added to <code>application.properties</code>:
+                        <pre><code class="language-properties">spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer</code></pre>
+                    </li>
+                    <li><strong>Fixing Test Loop</strong>: The <code>TaskTwoTests</code> was designed to run in an infinite loop, which prevented the test from completing and generating log files. This was fixed by replacing the <code>while(true)</code> loop with a <code>Thread.sleep(5000)</code> to allow the listener time to process messages before the test exits.</li>
+                </ul>
+            </li>
+            <li><strong>Debugging and Final Verification</strong>: The listener was still not producing visible logs in the test reports. After several attempts to fix this by adjusting logging levels and deserializers, a robust test verification strategy was implemented:
+                <ul>
+                    <li>The listener was modified to store received transactions in a list.</li>
+                    <li>The test was updated to use <code>Awaitility</code> to wait for the messages and then directly inspect the list.</li>
+                    <li>When logging was still suppressed, the test was temporarily modified to fail intentionally, printing the transaction amounts in the failure message to guarantee visibility.</li>
+                </ul>
+            </li>
+            <li><strong>Transaction Amounts Identified</strong>: This final debugging step successfully revealed the amounts of the first four transactions:
+                <pre><code>Transaction 1: 122.86
+Transaction 2: 42.87
+Transaction 3: 161.79
+Transaction 4: 22.22</code></pre>
+            </li>
+        </ul>
     </div>
 </body>
 </html>
