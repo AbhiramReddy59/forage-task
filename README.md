@@ -120,3 +120,36 @@ This setup ensures that the project has the necessary dependencies and basic con
 * **Result Verification**
   * Inspecting Wilbur (user id 9) after all valid, incentivised transfers: **3089.42**.
   * Rounded down per task instructions → **3089**.
+
+## 8. Task 5: Balance Query API Verification
+
+* **Objective**: Expose and verify a REST endpoint that returns the current balance for any user. The integration test (`TaskFiveTests`) populates users, streams transactions via Kafka, then queries `/balance?userId=` for users **0‥12**.
+* **Key Components**  
+  * `BalanceController` – Spring MVC controller exposing `GET /balance`.  
+  * `BalanceQuerier` – Test-side helper that calls the endpoint.  
+  * `TaskFiveTests` – Drives the full happy-path flow and logs the required output block.
+* **How to Run**
+  1. Ensure no other service is using **port 33400**.  
+  2. Execute:
+     ```bash
+     ./mvnw.cmd test -q -Dtest=TaskFiveTests
+     ```
+     (The Incentive API may be offline – the system now defaults incentive to 0 when unreachable.)
+* **Expected Console Snippet** (submit between the markers):
+
+```text
+---begin output ---
+Balance {amount=0.0}
+Balance {amount=1326.98}
+Balance {amount=2567.52}
+Balance {amount=2740.33}
+Balance {amount=140.97}
+Balance {amount=10.42}
+Balance {amount=845.49}
+Balance {amount=657.49}
+Balance {amount=99.19}
+Balance {amount=3434.0}
+Balance {amount=2157.19}
+Balance {amount=779421.33}
+Balance {amount=0.0}
+---end output ---

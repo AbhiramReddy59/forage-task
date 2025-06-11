@@ -243,6 +243,41 @@ Transaction 4: 22.22</code></pre>
             </li>
             <li><strong>Verified result</strong>: Wilbur’s ending balance = <strong>3089.42</strong> → rounded down to <strong>3089</strong>.</li>
         </ul>
+        
+        <h2>8. Task 5: Balance Query API Verification</h2>
+        <ul>
+            <li><strong>Objective</strong>: Verify the new <code>/balance</code> endpoint by running <code>TaskFiveTests</code> which streams transactions and queries balances for users <code>0&#8211;12</code>.</li>
+            <li><strong>Key Components</strong>:
+                <ul>
+                    <li><code>BalanceController</code> &ndash; <code>GET /balance?userId=</code></li>
+                    <li><code>BalanceQuerier</code> (test helper)</li>
+                    <li><code>TaskFiveTests</code> (integration)</li>
+                </ul>
+            </li>
+            <li><strong>How to run</strong>:
+                <ol>
+                    <li>Ensure port&nbsp;33400 is free.</li>
+                    <li><code>./mvnw.cmd test -q -Dtest=TaskFiveTests</code></li>
+                </ol>
+            </li>
+            <li><strong>Expected submission snippet</strong>:</li>
+        </ul>
+<pre><code>---begin output ---
+Balance {amount=0.0}
+Balance {amount=1326.98}
+Balance {amount=2567.52}
+Balance {amount=2740.33}
+Balance {amount=140.97}
+Balance {amount=10.42}
+Balance {amount=845.49}
+Balance {amount=657.49}
+Balance {amount=99.19}
+Balance {amount=3434.0}
+Balance {amount=2157.19}
+Balance {amount=779421.33}
+Balance {amount=0.0}
+---end output ---
+</code></pre>
     </div>
 </body>
 </html>
