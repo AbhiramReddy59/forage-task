@@ -99,3 +99,24 @@ This setup ensures that the project has the necessary dependencies and basic con
 * **REST Endpoint**: `BalanceController` exposes `/balance?userId=` so tests can query live balances.
 * **Configuration** (`application.properties`): Added H2 datasource settings, `spring.jpa.hibernate.ddl-auto=update`, H2 console, and fixed `server.port=33400` for later tests.
 * **Result Verification**: Running `TaskThreeTests` with the debugger shows Waldorf’s balance reaches **627.86** after all valid transfers, which the task asks to round down to **627**.
+
+## 7. Task 4: Incentive API Integration
+
+* **Objective**: After validating a transaction, query the external Incentive API (running from `services/transaction-incentive-api.jar`) to fetch an incentive amount and credit it to the recipient’s balance.
+* **Key Code Changes**
+  * Added `foundation.Incentive` DTO.
+  * Extended `TransactionRecord` with a new `incentive` column.
+  * Updated `TransactionService` to call the API via `RestTemplate` (`RestTemplateBuilder` autowired), parse the response, and apply the incentive (added to recipient only).
+* **How to Run**
+  1. Start the Incentive API:
+     ```bash
+     java -jar services/transaction-incentive-api.jar
+     ```
+  2. In another terminal run the tests that drive transactions:
+     ```bash
+     ./mvnw.cmd test -q -Dtest=TaskFourTests
+     ```
+     The test pauses so you can inspect balances.
+* **Result Verification**
+  * Inspecting Wilbur (user id 9) after all valid, incentivised transfers: **3089.42**.
+  * Rounded down per task instructions → **3089**.

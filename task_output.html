@@ -223,6 +223,26 @@ Transaction 4: 22.22</code></pre>
             <li><strong>Configuration</strong> (<code>application.properties</code>): Added H2 datasource settings, <code>spring.jpa.hibernate.ddl-auto=update</code>, H2 console, and fixed <code>server.port=33400</code> for later tests.</li>
             <li><strong>Result Verification</strong>: Running <code>TaskThreeTests</code> with the debugger shows Waldorf’s balance reaches <strong>627.86</strong> after all valid transfers, which the task asks to round down to <strong>627</strong>.</li>
         </ul>
+        
+        <h2>7. Task 4: Incentive API Integration</h2>
+        <ul>
+            <li><strong>Objective</strong>: After validating a transaction, hit the external Incentive API (port&nbsp;8080) to get an incentive amount and credit it to the recipient only.</li>
+            <li><strong>Code highlights</strong>:
+                <ul>
+                    <li>New <code>Incentive</code> DTO.</li>
+                    <li><code>TransactionRecord</code> gains <code>incentive</code> column.</li>
+                    <li><code>TransactionService</code> uses <code>RestTemplate</code> to POST the <code>Transaction</code> to <code>/incentive</code> and applies the returned amount.</li>
+                </ul>
+            </li>
+            <li><strong>How to reproduce</strong>:
+                <ol>
+                    <li><code>java -jar services/transaction-incentive-api.jar</code></li>
+                    <li><code>./mvnw.cmd test -q -Dtest=TaskFourTests</code></li>
+                    <li>Attach debugger to read Wilbur’s balance.</li>
+                </ol>
+            </li>
+            <li><strong>Verified result</strong>: Wilbur’s ending balance = <strong>3089.42</strong> → rounded down to <strong>3089</strong>.</li>
+        </ul>
     </div>
 </body>
 </html>
