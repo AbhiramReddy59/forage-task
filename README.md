@@ -82,3 +82,20 @@ This setup ensures that the project has the necessary dependencies and basic con
     Transaction 3: 161.79
     Transaction 4: 22.22
     ```
+
+## 6. Task 3: H2 Database Integration and Transaction Processing
+
+* **Objective**: Validate each incoming transaction, persist it to an in-memory H2 database, and keep user balances in sync.
+* **Domain Model**:
+  * `UserRecord` – JPA entity for users (id, name, balance)
+  * `TransactionRecord` – JPA entity representing a transfer; many-to-one to sender and recipient
+* **Persistence Layer**: Added `UserRepository` and `TransactionRecordRepository` (Spring Data `CrudRepository`).
+* **Business Logic**: Implemented `TransactionService` which
+  * checks sender/recipient exist
+  * verifies the sender has sufficient funds
+  * updates both balances atomically (`@Transactional`)
+  * writes a `TransactionRecord` for the audit trail.
+* **Kafka Listener**: `TransactionListener` now injects `TransactionService` and calls `processTransaction` on every consumed message.
+* **REST Endpoint**: `BalanceController` exposes `/balance?userId=` so tests can query live balances.
+* **Configuration** (`application.properties`): Added H2 datasource settings, `spring.jpa.hibernate.ddl-auto=update`, H2 console, and fixed `server.port=33400` for later tests.
+* **Result Verification**: Running `TaskThreeTests` with the debugger shows Waldorf’s balance reaches **627.86** after all valid transfers, which the task asks to round down to **627**.

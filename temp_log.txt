@@ -1,4 +1,16 @@
 -------------------------------------------------------------------------------
-Test set: com.jpmc.midascore.TaskTwoTests
+Test set: com.jpmc.midascore.TaskThreeTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.01 s -- in com.jpmc.midascore.TaskTwoTests
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 13.60 s <<< FAILURE! -- in com.jpmc.midascore.TaskThreeTests
+com.jpmc.midascore.TaskThreeTests.task_three_verifier -- Time elapsed: 1.294 s <<< ERROR!
+java.lang.Error: 
+Unresolved compilation problem: 
+	The method save(S) in the type CrudRepository<User,Long> is not applicable for the arguments (UserRecord)
+
+	at com.jpmc.midascore.component.DatabaseConduit.save(DatabaseConduit.java:16)
+	at com.jpmc.midascore.UserPopulator.populate(UserPopulator.java:21)
+	at com.jpmc.midascore.TaskThreeTests.task_three_verifier(TaskThreeTests.java:38)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+

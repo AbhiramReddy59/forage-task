@@ -199,6 +199,30 @@ Transaction 3: 161.79
 Transaction 4: 22.22</code></pre>
             </li>
         </ul>
+        
+        <h2>6. Task 3: H2 Database Integration and Transaction Processing</h2>
+        <ul>
+            <li><strong>Objective</strong>: Validate each incoming transaction, persist it to an in-memory H2 database, and keep user balances in sync.</li>
+            <li><strong>Domain Model</strong>:
+                <ul>
+                    <li><code>UserRecord</code> – JPA entity for users (id, name, balance)</li>
+                    <li><code>TransactionRecord</code> – JPA entity representing a transfer; many-to-one to sender and recipient</li>
+                </ul>
+            </li>
+            <li><strong>Persistence Layer</strong>: Added <code>UserRepository</code> and <code>TransactionRecordRepository</code> (Spring Data <code>CrudRepository</code>).</li>
+            <li><strong>Business Logic</strong>: Implemented <code>TransactionService</code> which
+                <ul>
+                    <li>checks sender/recipient exist</li>
+                    <li>verifies the sender has sufficient funds</li>
+                    <li>updates both balances atomically (<code>@Transactional</code>)</li>
+                    <li>writes a <code>TransactionRecord</code> for the audit trail.</li>
+                </ul>
+            </li>
+            <li><strong>Kafka Listener</strong>: <code>TransactionListener</code> now injects <code>TransactionService</code> and calls <code>processTransaction</code> on every consumed message.</li>
+            <li><strong>REST Endpoint</strong>: <code>BalanceController</code> exposes <code>/balance?userId=</code> so tests can query live balances.</li>
+            <li><strong>Configuration</strong> (<code>application.properties</code>): Added H2 datasource settings, <code>spring.jpa.hibernate.ddl-auto=update</code>, H2 console, and fixed <code>server.port=33400</code> for later tests.</li>
+            <li><strong>Result Verification</strong>: Running <code>TaskThreeTests</code> with the debugger shows Waldorf’s balance reaches <strong>627.86</strong> after all valid transfers, which the task asks to round down to <strong>627</strong>.</li>
+        </ul>
     </div>
 </body>
 </html>
